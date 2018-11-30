@@ -19,8 +19,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listView = findViewById<ListView>(R.id.listView)
-        // val redColor = Color.parseColor("#FF0000")
-        // listView.setBackgroundColor(redColor)
 
         // Modifying the list and set an adapter on it
         listView.adapter = myCustomAdapter(this) // this needs to be my custom adapter telling my list what to render
@@ -42,17 +40,28 @@ class MainActivity : AppCompatActivity() {
 
         // Responsible for rendering out each row
         override fun getView(position: Int, convertView: View?, viewGroup: ViewGroup?): View {
-            val layoutInflater = LayoutInflater.from(mContext)
-            val rowMain = layoutInflater.inflate(R.layout.row_main, viewGroup, false)
 
-            // Access the position TextView
-            val positionTextView = rowMain.findViewById<TextView>(R.id.position_textview)
+            // Make the rowMain accessible outside of the if
+            val rowMain: View
+
+            // Check if convertView is null, meaning we have to inflate a new row
+            if (convertView == null) {
+                val layoutInflater = LayoutInflater.from(mContext)
+                rowMain = layoutInflater.inflate(R.layout.row_main, viewGroup, false)
+
+                val positionTextView = rowMain.findViewById<TextView>(R.id.position_textview)
+                val nameTextView = rowMain.findViewById<TextView>(R.id.name_textView)
+                val viewHolder = ViewHolder(nameTextView, positionTextView)
+                rowMain.tag = viewHolder
+            } else {
+                // Well, we have our row as convertView, so just set rowMain as that view
+                rowMain = convertView
+            }
+
+            val viewHolder = rowMain.tag as ViewHolder
+            viewHolder.nameTextView.text = names.get(position)
             // Use string interpolation with a $ sign
-            positionTextView.text = "Row number: $position"
-
-            // Access the name TextView
-            val nameTextView = rowMain.findViewById<TextView>(R.id.name_textView)
-            nameTextView.text = names.get(position)
+            viewHolder.positionTextView.text = "Row number: $position"
 
             return rowMain
         }
@@ -70,5 +79,7 @@ class MainActivity : AppCompatActivity() {
             return names.size
         }
 
+        // Create the ViewHolder class
+        private class ViewHolder(val nameTextView: TextView, val positionTextView: TextView)
     }
 }
