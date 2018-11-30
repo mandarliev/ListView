@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
+import kotlinx.android.synthetic.main.row_main.view.*
 import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
@@ -21,22 +22,17 @@ class MainActivity : AppCompatActivity() {
         val listView = findViewById<ListView>(R.id.listView)
 
         // Modifying the list and set an adapter on it
-        listView.adapter = myCustomAdapter(this) // this needs to be my custom adapter telling my list what to render
+        listView.adapter = myCustomAdapter() // this needs to be my custom adapter telling my list what to render
     }
 
     // Create a custom adapter
-    private class myCustomAdapter(context: Context) : BaseAdapter() {
+    private class myCustomAdapter: BaseAdapter() {
 
-        private val mContext: Context
 
         // Create an ArrayList for the names
         private val names = arrayListOf<String>(
             "Kobe Bryant", "Elon Musk", "Barack Obama", "Joe Rogan", "Sal Khan"
         )
-
-        init {
-            mContext = context
-        }
 
         // Responsible for rendering out each row
         override fun getView(position: Int, convertView: View?, viewGroup: ViewGroup?): View {
@@ -46,12 +42,10 @@ class MainActivity : AppCompatActivity() {
 
             // Check if convertView is null, meaning we have to inflate a new row
             if (convertView == null) {
-                val layoutInflater = LayoutInflater.from(mContext)
+                val layoutInflater = LayoutInflater.from(viewGroup!!.context)
                 rowMain = layoutInflater.inflate(R.layout.row_main, viewGroup, false)
 
-                val positionTextView = rowMain.findViewById<TextView>(R.id.position_textview)
-                val nameTextView = rowMain.findViewById<TextView>(R.id.name_textView)
-                val viewHolder = ViewHolder(nameTextView, positionTextView)
+                val viewHolder = ViewHolder(rowMain.name_textView, rowMain.position_textview)
                 rowMain.tag = viewHolder
             } else {
                 // Well, we have our row as convertView, so just set rowMain as that view
